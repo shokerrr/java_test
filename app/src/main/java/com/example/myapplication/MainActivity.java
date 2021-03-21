@@ -6,6 +6,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.gson.Gson;
 
@@ -31,11 +32,12 @@ public class MainActivity extends AppCompatActivity {
 
         ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
         TextView contentView = (TextView) findViewById(R.id.content);
-        //WebView browser = (WebView) findViewById(R.id.webBrowser);
 
-        //browser.getSettings().setJavaScriptEnabled(true);
+        SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_container);
 
-        new Thread(() -> {
+
+
+        Thread th = new Thread(() -> {
             try {
                 ArrayList<Valute> valG = new ArrayList<> (getContent(pathResource));
 
@@ -51,20 +53,43 @@ public class MainActivity extends AppCompatActivity {
 
             } catch (Exception ex) {
 
-                scrollView.post(() -> {
-                    //contentView.setText(ex.toString());
+                //scrollView.post(() -> {
                     Log.d("Exception", ex.toString());
-                });
+                //});
 
-                //scrollView.addView(contentView);
             }
-        }).start();
+        });
+
+        th.start();
+
+        //th.interrupt();
+        //try {
+        //    th.join();
+        //} catch (InterruptedException e) {
+        ///    Log.d("Exception", e.toString());
+       // }
+        //нужна перезагрузка/перезапуск потока для обновления информации по валютам
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+
+            th.interrupt();
+
+            if(th.isInterrupted())
+                th.run();
+            //swipeRefreshLayout.clearAnimation();
+            swipeRefreshLayout.setRefreshing(false);
+            //swipeRefreshLayout.stopNestedScroll();
+        });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
     }
+
+/*    @Override
+    public void onRefresh() {
+        //reload the data
+    }*/
 
     /*@Override
     protected void onRestart() {

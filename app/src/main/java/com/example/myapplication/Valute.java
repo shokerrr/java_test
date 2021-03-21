@@ -24,6 +24,6 @@ public class Valute {
 
 
     public String toString() {
-        return String.format("%s Курс:%f\n", Name, Value);
+        return String.format("%s курс: %3.2f\n", Name, Value);
     }
 }
