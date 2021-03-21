@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,22 +19,63 @@ import javax.net.ssl.HttpsURLConnection;
 
 
 public class MainActivity extends AppCompatActivity {
+    private String pathResource = "https://www.cbr-xml-daily.ru/daily_json.js";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //layoutInflater.inflate(R.layout., this, true);
 
+        ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
         TextView contentView = (TextView) findViewById(R.id.content);
         //WebView browser = (WebView) findViewById(R.id.webBrowser);
 
         //browser.getSettings().setJavaScriptEnabled(true);
 
+        new Thread(() -> {
+            try {
+                ArrayList<Valute> valG = new ArrayList<> (getContent(pathResource));
+
+
+                scrollView.post(() -> {
+                    StringBuilder s = new StringBuilder();
+
+                    for(Valute v: valG) s.append(v.toString());
+                      contentView.setText(s.toString());
+                });
+                scrollView.addView(contentView);
+
+
+            } catch (Exception ex) {
+
+                scrollView.post(() -> {
+                    //contentView.setText(ex.toString());
+                    Log.d("Exception", ex.toString());
+                });
+
+                //scrollView.addView(contentView);
+            }
+        }).start();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    /*@Override
+    protected void onRestart() {
+
+        TextView contentView = (TextView) findViewById(R.id.content);
+
+
         new Thread(new Runnable(){
             public  void run() {
                 try {
-                    ArrayList<Valute> valG = new ArrayList<> (getContent("https://www.cbr-xml-daily.ru/daily_json.js"));
+                    ArrayList<Valute> valG = new ArrayList<> (getContent(pathResource));
 
 
                     contentView.post(new Runnable() {
@@ -56,9 +99,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }).start();
-
-
+        super.onRestart();
     }
+*/
+/*    private void threadReadResponseFromServer(){
+
+    }*/
 
 
     //создаем соединение с сайтом. сериализуем данные в объекты и вставляем в список валют
@@ -112,8 +158,6 @@ public class MainActivity extends AppCompatActivity {
 
                         valG.add(tempVal);
                     }
-
-
 
                     buf.append(line).append("\n");
                 }
