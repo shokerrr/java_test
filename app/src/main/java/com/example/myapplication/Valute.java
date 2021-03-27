@@ -22,8 +22,8 @@ public class Valute {
     private Double Previous;
 
 
-
-    public String toString() {
+    //public String toString(){return String.format("%s курс: %3.2f\n", Name, Value);}
+    public String toStringLight() {
         return String.format("%s курс: %3.2f\n", Name, Value);
     }
 }
