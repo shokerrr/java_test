@@ -240,11 +240,9 @@ public class MainActivity extends AppCompatActivity {
                 {
                     if (line.indexOf("{") > 0)  {
                         buf.delete(0, buf.length());
-                        line = "{";
                     }
 
                     if (line.indexOf("}") > 0) {
-                        line = "}";
                         buf.append(line);
 
                         tempVal = new Gson().fromJson(buf.toString(), Valute.class);
